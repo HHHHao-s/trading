@@ -1,0 +1,22 @@
+title: Trading - 交易学习笔记
+description: 交易学习笔记
+baseurl: "/trading"
+url: "https://hhhhhao-s.github.io"
+
+# Build settings
+markdown: kramdown
+theme: null
+
+# Exclude from build
+exclude:
+  - .git
+  - .github
+  - .claude
+  - README.md
+
+# Default front matter
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
