@@ -6,8 +6,8 @@
   <title>{{ page.title | default: site.title }}</title>
   <style>
     :root {
-      --nav-width: 200px;
-      --toc-width: 220px;
+      --nav-width: 240px;
+      --toc-width: 260px;
       --max-width: 1500px;
     }
 
@@ -138,10 +138,6 @@
 
     .right-toc nav a.toc-h2 { padding-left: 8px; }
     .right-toc nav a.toc-h3 { padding-left: 22px; font-size: 0.78rem; }
-    .right-toc nav a.toc-h4 { padding-left: 36px; font-size: 0.75rem; color: #999; }
-
-    .right-toc nav a.toc-h4:hover,
-    .right-toc nav a.toc-h4.active { color: #0366d6; }
 
     /* ===== Content Styles ===== */
     .center-content .container {
@@ -243,7 +239,7 @@
     if (!content || !tocNav) return;
 
     // Find all headings in content
-    var headings = content.querySelectorAll('h1, h2, h3, h4');
+    var headings = content.querySelectorAll('h1, h2, h3');
     if (headings.length === 0) {
       tocSidebar.style.display = 'none';
       return;
