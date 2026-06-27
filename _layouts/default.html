@@ -5,18 +5,154 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title | default: site.title }}</title>
   <style>
+    :root {
+      --nav-width: 200px;
+      --toc-width: 220px;
+      --max-width: 1500px;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-      max-width: 900px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       line-height: 1.6;
       color: #333;
+      background: #fafafa;
     }
+
+    .page-wrapper {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ===== Left Nav ===== */
+    .left-nav {
+      width: var(--nav-width);
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 20px 16px;
+      border-right: 1px solid #e8e8e8;
+      background: #fff;
+    }
+
+    .left-nav .site-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #0366d6;
+    }
+
+    .left-nav .site-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .left-nav .nav-group {
+      margin-bottom: 16px;
+    }
+
+    .left-nav .nav-group-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .left-nav .nav-group a {
+      display: block;
+      font-size: 0.85rem;
+      color: #555;
+      text-decoration: none;
+      padding: 3px 8px;
+      border-radius: 4px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .left-nav .nav-group a:hover,
+    .left-nav .nav-group a.active {
+      background: #f0f4ff;
+      color: #0366d6;
+    }
+
+    /* ===== Center Content ===== */
+    .center-content {
+      flex: 1;
+      min-width: 0;
+      padding: 20px 32px;
+      background: #fff;
+    }
+
+    .center-content .home-link {
+      margin-bottom: 16px;
+    }
+
+    /* ===== Right TOC ===== */
+    .right-toc {
+      width: var(--toc-width);
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 20px 16px;
+      border-left: 1px solid #e8e8e8;
+      background: #fff;
+    }
+
+    .right-toc .toc-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .right-toc nav a {
+      display: block;
+      font-size: 0.8rem;
+      color: #666;
+      text-decoration: none;
+      padding: 2px 0;
+      transition: color 0.15s;
+      border-left: 2px solid transparent;
+      padding-left: 8px;
+    }
+
+    .right-toc nav a:hover,
+    .right-toc nav a.active {
+      color: #0366d6;
+      border-left-color: #0366d6;
+    }
+
+    .right-toc nav a.toc-h2 { padding-left: 8px; }
+    .right-toc nav a.toc-h3 { padding-left: 22px; font-size: 0.78rem; }
+    .right-toc nav a.toc-h4 { padding-left: 36px; font-size: 0.75rem; color: #999; }
+
+    .right-toc nav a.toc-h4:hover,
+    .right-toc nav a.toc-h4.active { color: #0366d6; }
+
+    /* ===== Content Styles ===== */
+    .center-content .container {
+      background: #fff;
+    }
+
     img {
       max-width: 100%;
       height: auto;
     }
+
     a {
       color: #0366d6;
       text-decoration: none;
@@ -24,28 +160,134 @@
     a:hover {
       text-decoration: underline;
     }
-    h1, h2, h3 { color: #1a1a1a; }
+
+    h1, h2, h3, h4 { color: #1a1a1a; scroll-margin-top: 20px; }
+
     code {
       background: #f6f8fa;
       padding: 2px 6px;
       border-radius: 3px;
     }
+
     pre {
       background: #f6f8fa;
       padding: 16px;
       border-radius: 6px;
       overflow-x: auto;
     }
-    .container {
-      background: #fff;
-      padding: 20px;
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1024px) {
+      .left-nav,
+      .right-toc {
+        display: none;
+      }
+      .center-content {
+        padding: 20px 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <p><a href="{{ '/' | relative_url }}">← 首页</a></p>
-    {{ content }}
+  <div class="page-wrapper">
+
+    <!-- ===== Left Navigation ===== -->
+    <aside class="left-nav">
+      <div class="site-title">
+        <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      </div>
+
+      {% assign nav_pages = site.pages | where_exp: "item", "item.path != 'index.md'" | sort: "path" %}
+      {% assign current_group = "" %}
+      {% for p in nav_pages %}
+        {% assign dir = p.path | split: "/" | first %}
+        {% if dir != current_group %}
+          {% if current_group != "" %}</div>{% endif %}
+          {% assign current_group = dir %}
+          <div class="nav-group">
+            <div class="nav-group-title">{{ dir }}</div>
+        {% endif %}
+        {% assign p_url = p.url | relative_url %}
+        {% assign current_url = page.url | relative_url %}
+        <a href="{{ p_url }}"{% if p_url == current_url %} class="active"{% endif %}>
+          {{ p.title | default: p.name }}
+        </a>
+      {% endfor %}
+      {% if current_group != "" %}</div>{% endif %}
+    </aside>
+
+    <!-- ===== Center Content ===== -->
+    <main class="center-content">
+      <div class="home-link">
+        <a href="{{ '/' | relative_url }}">← 首页</a>
+      </div>
+      <div class="container">
+        {{ content }}
+      </div>
+    </main>
+
+    <!-- ===== Right TOC ===== -->
+    <aside class="right-toc" id="toc-sidebar">
+      <div class="toc-title">目录</div>
+      <nav id="toc-nav"></nav>
+    </aside>
+
   </div>
+
+  <script>
+  (function() {
+    var tocNav = document.getElementById('toc-nav');
+    var tocSidebar = document.getElementById('toc-sidebar');
+    var content = document.querySelector('.center-content .container');
+
+    if (!content || !tocNav) return;
+
+    // Find all headings in content
+    var headings = content.querySelectorAll('h1, h2, h3, h4');
+    if (headings.length === 0) {
+      tocSidebar.style.display = 'none';
+      return;
+    }
+
+    // Build TOC
+    var items = [];
+    headings.forEach(function(h, i) {
+      // Add id if missing
+      if (!h.id) {
+        h.id = 'heading-' + i;
+      }
+      var level = parseInt(h.tagName.charAt(1));
+      var link = document.createElement('a');
+      link.href = '#' + h.id;
+      link.textContent = h.textContent;
+      link.className = 'toc-h' + level;
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var target = document.getElementById(h.id);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+      tocNav.appendChild(link);
+      items.push({ el: h, link: link });
+    });
+
+    // Highlight current heading on scroll
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var link = items.find(function(item) { return item.el === entry.target; });
+        if (link) {
+          if (entry.isIntersecting) {
+            // Remove active from all
+            items.forEach(function(item) { item.link.classList.remove('active'); });
+            link.link.classList.add('active');
+          }
+        }
+      });
+    }, { rootMargin: '-60px 0px -80% 0px' });
+
+    headings.forEach(function(h) { observer.observe(h); });
+  })();
+  </script>
 </body>
 </html>
