@@ -221,8 +221,9 @@
         {% endif %}
         {% assign p_url = p.url | relative_url %}
         {% assign current_url = page.url | relative_url %}
+        {% assign filename = p.path | split: "/" | last | split: "." | first %}
         <a href="{{ p_url }}"{% if p_url == current_url %} class="active"{% endif %}>
-          {{ p.title | default: p.name }}
+          {{ filename }}
         </a>
       {% endfor %}
       {% if current_group != "" %}</div>{% endif %}
