@@ -10,7 +10,8 @@ layout: default
 {% assign capital_files = site.pages | where_exp: "item", "item.path contains 'QihengDK-CAPITAL'" %}
 
 {% for page in capital_files %}
-- [{{ page.title | default: page.name }}]({{ page.url | relative_url }})
+{% assign filename = page.path | split: "/" | last | split: "." | first %}
+- [{{ filename }}]({{ page.url | relative_url }})
 {% endfor %}
 
 ## 其他
@@ -18,5 +19,6 @@ layout: default
 {% assign other_files = site.pages | where_exp: "item", "item.path contains '其他'" %}
 
 {% for page in other_files %}
-- [{{ page.title | default: page.name }}]({{ page.url | relative_url }})
+{% assign filename = page.path | split: "/" | last | split: "." | first %}
+- [{{ filename }}]({{ page.url | relative_url }})
 {% endfor %}
