@@ -7,7 +7,7 @@ layout: default
 
 ## 奇衡DK-CAPITAL
 
-{% assign capital_files = site.pages | where_exp: "item", "item.path contains 'QihengDK-CAPITAL'" %}
+{% assign capital_files = site.pages | where_exp: "item", "item.path contains '奇衡DK-Capital'" %}
 
 {% for page in capital_files %}
 {% assign filename = page.path | split: "/" | last | split: "." | first %}
